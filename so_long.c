@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   so_long.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ajurczyk <ajurczyk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adamjurczyk <adamjurczyk@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 10:48:31 by ajurczyk          #+#    #+#             */
-/*   Updated: 2025/07/01 13:06:17 by ajurczyk         ###   ########.fr       */
+/*   Updated: 2025/07/01 19:13:08 by adamjurczyk      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 int	main(int ac, char **av)
 {
-	t_data	*game;
+	t_list	*game;
 
 	game = NULL;
 	if (ac != 2)
-		ft_free_exit("ERROR\nMissing or wrong parameter\n", game, 1);
-	game = malloc(sizeof(t_data));
+		ft_free_exit("ERROR\nMissing or wrong parameter\n", game);
+	game = malloc(sizeof(t_list));
 	if (!game)
-		ft_free_exit("ERROR\nGame allocation failure.\n", game, 1);
+		ft_free_exit("ERROR\nGame allocation failure.\n", game);
 	game->m_name = av[1];
 	game->win = NULL;
 	game->collected = 0;
@@ -29,11 +29,13 @@ int	main(int ac, char **av)
 	game->p_count = 0;
 	game->c_count = 0;
 	game->movecounter = 0;
+	check_file(game);
 	init_map(game);
-	check_members(game);
-	set_player_pos(game);
-	set_exit(game);
-	start_data(game);
+	check_map(game);
+	check_structure(game);
+	set_player_and_exit(game);
+	validate_path(game);
+	start_list(game);
 	mlx_hook(game->win, 17, 0, close_window_hook, game);
 	mlx_key_hook(game->win, key_hook, game);
 	mlx_loop(game->mlx);
