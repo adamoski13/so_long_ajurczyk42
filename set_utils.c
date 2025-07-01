@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   set_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ajurczyk <ajurczyk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adamjurczyk <adamjurczyk@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 11:03:45 by ajurczyk          #+#    #+#             */
-/*   Updated: 2025/07/01 13:15:19 by ajurczyk         ###   ########.fr       */
+/*   Updated: 2025/07/01 19:13:07 by adamjurczyk      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
 
-void	find_height(t_data *game)
+void	find_height(t_list *game)
 {
 	char	*line;
 	int		i;
@@ -33,7 +33,7 @@ void	find_height(t_data *game)
 	close(game->fd);
 }
 
-void	init_map(t_data *game)
+void	init_map(t_list *game)
 {
 	char	*line;
 	int		i;
@@ -44,7 +44,7 @@ void	init_map(t_data *game)
 	game->temp_map = (char **)malloc((game->m_height + 1) * sizeof(char *));
 	game->fd = open(game->m_name, O_RDONLY);
 	if (!game->map || !game->temp_map)
-		ft_free_exit("Error\nMap allocation error!", game, 1);
+		ft_free_exit("Error\nMap allocation error!", game);
 	line = get_next_line(game->fd);
 	while (line)
 	{
@@ -59,71 +59,29 @@ void	init_map(t_data *game)
 	game->m_width = (int)ft_strlen(game->map[0]);
 	close(game->fd);
 }
-	
-void	check_members(t_data *game)
-{
-	char	**map;
-	char	*row;
 
-	map = game->map;
-	while (*map)
-	{
-		row = *map;
-		while (*row)
-		{
-			if (*row == 'E')
-				++game->e_count;
-			else if (*row == 'P')
-				++game->p_count;
-			else if (*row == 'C')
-				++game->c_count;
-			row++;
-		}
-		map++;
-	}
-}
-
-void	set_player_pos(t_data *game)
+void	set_player_and_exit(t_list *game)
 {
 	int	x;
 	int	y;
 
-	y = 0;
-	while (game->map[y])
+	y = -1;
+	while (game->map[y++])
 	{
-		x = 0;
-		while (game->map[y][x])
+		x = -1;
+		while (game->map[y][x++])
 		{
 			if (game->map[y][x] == 'P')
 			{
-				game->p_x = x;
-				game->p_y = y;
-				break ;
+				game->player_x = x;
+				game->player_y = y;
 			}
-			x++;
-		}
-		y++;
-	}
-}
-
-void	set_exit(t_data *game)
-{
-	int		x;
-	int		y;
-	char	**map;
-
-	map = game->map;
-	y = -1;
-	while (map[++y])
-	{
-		x = -1;
-		while (map[y][++x])
-		{
-			if (map[y][x] == 'E')
+			else if (game->map[y][x] == 'E')
 			{
-				game->e_x = x;
-				game->e_y = y;
+				game->exit_x = x;
+				game->exit_y = y;
 			}
 		}
 	}
+	check_path(game, game->player_y, game->player_x);
 }
