@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   move_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ajurczyk <ajurczyk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adamjurczyk <adamjurczyk@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 11:21:25 by ajurczyk          #+#    #+#             */
-/*   Updated: 2025/07/01 11:27:13 by ajurczyk         ###   ########.fr       */
+/*   Updated: 2025/07/01 19:15:40 by adamjurczyk      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
 
-void	endgame(t_data *game, int is_win)
+void	endgame(t_list *game, int is_win)
 {
 	int	i;
 
@@ -34,99 +34,87 @@ void	endgame(t_data *game, int is_win)
 		mlx_destroy_display(game->mlx);
 		free(game->mlx);
 	}
-	if (is_win == 1)
-		ft_winloseprint(1);
-	else if (is_win == 0)
-		ft_winloseprint(0);
-	ft_free_exit("", game, 0);
+	if (is_win)
+		ft_putstr_fd("*** WINNER ***\n", STDOUT_FILENO);
+	else
+		ft_putst_fd(":( LOOSER :(\n", STDOUT_FILENO);
+	ft_free_exit("", game);
 }
 
-void	move_l_r(t_data *game, int val)
+void	move_l_r(t_list *game, int val)
 {
 	char	**map;
 
 	map = game->map;
-	if (map[game->p_y][game->p_x + val] != '1')
+	if (map[game->player_y][game->player_x + val] != '1')
 	{
-		map[game->p_y][game->p_x] = '0';
-		game->p_x += val;
+		map[game->player_y][game->player_x] = '0';
+		game->player_x += val;
 		++game->movecounter;
-		if (map[game->p_y][game->p_x] == 'C')
+		if (map[game->player_y][game->player_x] == 'C')
 			++game->collected;
-		if (map[game->p_y][game->p_x] == 'E'
+		if (map[game->player_y][game->player_x] == 'E'
 		&& game->collected == game->c_count)
 		{
-			map[game->p_y][game->p_x] = 'P';
+			map[game->player_y][game->player_x] = 'P';
 			refresh_frame(game);
 			sleep(1);
 			endgame(game, 1);
 		}
-		map[game->p_y][game->p_x] = 'P';
+		map[game->player_y][game->player_x] = 'P';
 		refresh_frame(game);
 	}
 }
 
-void	move_u_d(t_data *game, int val)
+void	move_u_d(t_list *game, int val)
 {
 	char	**map;
 
 	map = game->map;
-	if (map[game->p_y + val][game->p_x] != '1')
+	if (map[game->player_y + val][game->player_x] != '1')
 	{
-		map[game->p_y][game->p_x] = '0';
-		game->p_y += val;
+		map[game->player_y][game->player_x] = '0';
+		game->player_y += val;
 		++game->movecounter;
-		if (map[game->p_y][game->p_x] == 'C')
+		if (map[game->player_y][game->player_x] == 'C')
 			++game->collected;
-		if (map[game->p_y][game->p_x] == 'E'
+		if (map[game->player_y][game->player_x] == 'E'
 		&& game->collected == game->c_count)
 		{
-			map[game->p_y + val][game->p_x] = 'P';
+			map[game->player_y + val][game->player_x] = 'P';
 			refresh_frame(game);
 			sleep(1);
 			endgame(game, 1);
 		}
-		map[game->p_y][game->p_x] = 'P';
+		map[game->player_y][game->player_x] = 'P';
 		refresh_frame(game);
 	}
 }
 
-void	refresh_frame(t_data *game)
+void	refresh_frame(t_list *game)
 {
 	char	*counter;
 	char	*collected;
 
-	print_bg(game);
-	print_nonmovings(game);
-	print_player(game);
+	print_background(game);
+	print_others(game);
 	counter = ft_itoa(game->movecounter);
 	collected = ft_itoa(game->collected);
-	ft_putstr("Count:");
-	ft_putstr(counter);
-	ft_putstr("		Collected:");
-	ft_putstr(collected);
+	ft_putstr_fd("Count:", STDOUT_FILENO);
+	ft_putstr_fd(counter, STDOUT_FILENO);
+	ft_putstr_fd("		Collected:", STDOUT_FILENO);
+	ft_putstr_fd(collected, STDOUT_FILENO);
 	write(1, "\n", 1);
 	free(counter);
 	free(collected);
 }
 
-void	ft_winloseprint(int is_win)
+int	key_hook(int key, t_list *game)
 {
-	if (is_win == 1)
-	{
-		ft_putstr("YOU WIN");
-		write(1, "\n", 1);
-	}
-	else
-		ft_putstr("YOU LOOSE");
-}
-
-int	key_hook(int key, t_data *game)
-{
-	if (key == KEY_DOWN)
-		move_u_d(game, 1);
-	else if (key == KEY_UP)
+	if (key == KEY_UP)
 		move_u_d(game, -1);
+	else if (key == KEY_DOWN)
+		move_u_d(game, 1);
 	else if (key == KEY_LEFT)
 		move_l_r(game, -1);
 	else if (key == KEY_RIGHT)
@@ -138,7 +126,7 @@ int	key_hook(int key, t_data *game)
 	return (0);
 }
 
-int	close_window_hook(t_data *game)
+int	close_window_hook(t_list *game)
 {
 	endgame(game, 0);
 	return (0);
