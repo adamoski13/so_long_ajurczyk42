@@ -3,50 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   libft_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ajurczyk <ajurczyk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adamjurczyk <adamjurczyk@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 11:45:05 by ajurczyk          #+#    #+#             */
-/*   Updated: 2025/07/01 12:45:27 by ajurczyk         ###   ########.fr       */
+/*   Updated: 2025/07/01 19:14:23 by adamjurczyk      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
-
-char	*ft_strtrim(char *src, char *set)
-{
-	int		i;
-	int		j;
-
-	i = 0;
-	j = ft_strlen(src);
-	if (!src || !set)
-		return (0);
-	while (src[i] && ft_strchr(set, src[i]))
-		i++;
-	if (!src[i])
-		return ((char *)ft_calloc(1, sizeof(char)));
-	while (src[i] && ft_strchr(set, src[j]))
-		j--;
-	return (ft_substr(src, i, (j - i + 1)));
-}
-
-void	*ft_calloc(size_t num, size_t n)
-{
-	size_t			i;
-	size_t			mem;
-	unsigned char	*temp;
-
-	mem = num * n;
-	if (mem && mem / num != n)
-		return (0);
-	temp = malloc(mem);
-	if (!temp)
-		return (0);
-	i = 0;
-	while (i < mem)
-		temp[i++] = 0;
-	return (temp);
-}
 
 char	*ft_substr(char *s, unsigned int start, size_t len)
 {
@@ -180,13 +144,16 @@ char	*ft_strchr(char *s, int c)
 	return (0);
 }
 
-void	ft_putstr(char *str)
+void	ft_putstr_fd(char *s, int fd)
 {
 	int	i;
 
 	i = 0;
-	while (str[i])
-		write(2, &str[i++], 1);
+	while (s[i])
+	{
+		write(fd, &s[i], 1);
+		i++;
+	}
 }
 
 size_t	get_digits(int n)
