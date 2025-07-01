@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ajurczyk <ajurczyk@student.42.fr>          +#+  +:+       +#+         #
+#    By: adamjurczyk <adamjurczyk@student.42.fr>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/01 10:50:22 by ajurczyk          #+#    #+#              #
-#    Updated: 2025/07/01 14:11:00 by ajurczyk         ###   ########.fr        #
+#    Updated: 2025/07/01 17:42:27 by adamjurczyk      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ CC = cc
 CFLAGS = -Wextra -Wall -Werror
 MLXPATH = minilibx-linux
 MLXLAGS = -Lminilibx-linux -lmlx_Linux -lXext -lX11 
-SRCS = $(addsuffix .c, so_long set_utils game_utils move_utils libft_utils errors get_next_line)
+SRCS = $(addsuffix .c, so_long set_utils game_utils move_utils libft_utils errors checks get_next_line)
 OBJS = $(SRCS:.c=.o)
 
 $(NAME): $(OBJS)
